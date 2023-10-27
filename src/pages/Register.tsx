@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom'
 interface registerData {
   nombre: string
   apellido: string
-  dni: string
   fecha_nacimiento: string
   telefono: string
   email: string
@@ -19,13 +18,14 @@ const Register = (): JSX.Element => {
   const navigate = useNavigate()
 
   const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
 
   const [rptPassword, setRptPassword] = useState<string>('')
+  const [coinciden, setCoinciden] = useState<boolean>(true)
 
   const [inputData, setInputData] = useState<registerData>({
     nombre: '',
     apellido: '',
-    dni: '',
     fecha_nacimiento: '',
     telefono: '',
     email: '',
@@ -41,31 +41,38 @@ const Register = (): JSX.Element => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     if (inputData.password !== rptPassword) {
-      toast.error('Las contraseñas no coinciden', {
-        position: 'top-center',
-        autoClose: 2000,
-      })
+      setCoinciden(false)
     } else {
+      setLoading(true)
+      setCoinciden(true)
       const url = 'http://localhost:3000/api/user/register'
       try {
         if (
           inputData.email &&
           inputData.password &&
-          inputData.dni &&
           inputData.nombre &&
           inputData.apellido &&
           inputData.fecha_nacimiento &&
           inputData.telefono
         ) {
           const info = {
-            ...(await axios.post(url, { ...inputData })),
+            ...(await axios.post(url, { ...inputData })).data,
           }
-          if (info) {
+
+          if (info.error)
+            toast.error('Email o telefono ya registrados!', {
+              position: 'top-center',
+              autoClose: 2000,
+            })
+          else {
             setTimeout(() => {
               navigate('/')
             }, 3000)
+            toast.success('Cuenta creada con exito!', {
+              position: 'top-center',
+              autoClose: 3000,
+            })
             toast.success('Email de verificacion enviado!', {
               position: 'top-center',
               autoClose: 3000,
@@ -77,6 +84,7 @@ const Register = (): JSX.Element => {
           position: 'top-center',
           autoClose: 2000,
         })
+        console.log('hola' + error)
       } finally {
         setLoading(false)
       }
@@ -88,13 +96,13 @@ const Register = (): JSX.Element => {
       <div className='container h-screen w-full'>
         <Header />
         <div className='bg-hero2 h-full bg-cover bg-no-repeat z-20 opacity-[85%] w-full flex-col flex justify-center px-8'>
-          <div className='container py-4 flex flex-col flex-nowrap bg-white w-full rounded-lg shadow-lg'>
-            <form className='flex flex-col items-center w-full h-full my-8 font-bold'>
+          <div className='container py-4 flex flex-col flex-nowrap bg-white rounded-lg shadow-lg mt-12'>
+            <form className='flex flex-col items-center h-full my-8 font-bold'>
               <h1 className='text-3xl text-center text-teal-500'>Registrate</h1>
-              <div className='w-[90%] flex flex-col gap-y-2 items-center mt-6'>
+              <div className='w-full flex flex-col gap-y-2 items-center mt-6'>
                 <div className='flex flex-col gap-y-1 w-[80%]'>
                   <p className=''>Nombre completo:</p>
-                  <div className='flex w-[100%]'>
+                  <div className='flex w-[100%] gap-4'>
                     <input
                       type='text'
                       className='h-10 border-[1px] pl-2 w-[100%] font-thin'
@@ -105,7 +113,7 @@ const Register = (): JSX.Element => {
                     />
                     <input
                       type='text'
-                      className='h-10 border-[1px] pl-2 w-[100%]'
+                      className='h-10 border-[1px] pl-2 w-[100%] font-thin'
                       name='apellido'
                       placeholder='Apellido'
                       onChange={handleDataInput}
@@ -124,21 +132,12 @@ const Register = (): JSX.Element => {
                   />
                 </div>
                 <div className='flex flex-col gap-y-1 w-[80%]'>
-                  <p className=''>Nro. documento:</p>
-                  <input
-                    type='text'
-                    className='h-10 border-[1px] pl-2 font-light'
-                    name='dni'
-                    onChange={handleDataInput}
-                    required
-                  />
-                </div>
-                <div className='flex flex-col gap-y-1 w-[80%]'>
                   <p className=''>Telefono:</p>
                   <input
                     type='text'
                     className='h-10 border-[1px] pl-2 font-light'
                     name='telefono'
+                    placeholder='Telefono'
                     onChange={handleDataInput}
                     required
                   />
@@ -149,6 +148,7 @@ const Register = (): JSX.Element => {
                     type='email'
                     className='h-10 border-[1px] pl-2 font-light'
                     name='email'
+                    placeholder='Email'
                     onChange={handleDataInput}
                     required
                   />
@@ -157,8 +157,9 @@ const Register = (): JSX.Element => {
                   <p className=''>Contraseña:</p>
                   <input
                     type='password'
-                    className='h-10 border-[1px] pl-2'
+                    className='h-10 border-[1px] pl-2 font-thin'
                     name='password'
+                    placeholder='Contraseña'
                     onChange={handleDataInput}
                     required
                   />
@@ -167,11 +168,19 @@ const Register = (): JSX.Element => {
                   <p className=''>Repite la contraseña:</p>
                   <input
                     type='password'
-                    className='h-10 border-[1px] pl-2'
+                    className='h-10 border-[1px] pl-2 font-thin'
                     name='password'
+                    placeholder='Repite la contraseña'
                     required
                     onChange={(e) => setRptPassword(e.target.value)}
                   />
+                  {!coinciden ? (
+                    <p className='text-red-700 font-thin'>
+                      Las contraseñas no coinciden
+                    </p>
+                  ) : (
+                    <p></p>
+                  )}
                 </div>
 
                 <Button

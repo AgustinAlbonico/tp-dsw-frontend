@@ -6,6 +6,7 @@ interface data {
   to: string | null
   onClick: null | ((e: React.FormEvent) => void)
   loading: boolean
+  key: number | null
 }
 
 const Button = ({
@@ -14,6 +15,7 @@ const Button = ({
   to = '',
   onClick,
   loading,
+  key,
 }: data): JSX.Element => {
   const navigate = useNavigate()
 

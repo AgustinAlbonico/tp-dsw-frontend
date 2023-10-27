@@ -6,8 +6,6 @@ import { AiTwotoneCalendar } from 'react-icons/ai'
 import Button from './Button'
 import Select from 'react-select'
 
-import DatePicker from 'react-datepicker'
-
 import 'react-datepicker/dist/react-datepicker.css'
 
 const backend_url: string = import.meta.env.VITE_BACKEND_URL
@@ -48,6 +46,7 @@ const FormCancha = (): JSX.Element => {
     fetch(`${backend_url}/zona`)
       .then((res) => res.json())
       .then((data) => {
+        console.log('asdasd')
         setZonas(data)
       })
     //Cargo datos de los tipos de cancha
@@ -76,7 +75,7 @@ const FormCancha = (): JSX.Element => {
     setLoading(false)
   }
 
-  const handleSubmit2 = (e: React.FormEvent): void => {
+  /*const handleSubmit2 = (e: React.FormEvent): void => {
     e.preventDefault()
     setLoading(true)
     if (cancha?.cod_zona && cancha.cod_tipo && cancha.fecha)
@@ -84,7 +83,7 @@ const FormCancha = (): JSX.Element => {
         `/canchas?zona=${cancha.cod_zona}&tipo-cancha=${cancha.cod_tipo}&fecha=${cancha.fecha}`
       )
     setLoading(false)
-  }
+  }*/
 
   return (
     <form

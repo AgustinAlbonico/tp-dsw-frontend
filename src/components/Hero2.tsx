@@ -7,8 +7,7 @@ const Hero2 = (): JSX.Element => {
       <div className='bg-hero2 h-full bg-cover bg-no-repeat z-20 opacity-[85%] absolute w-full'>
         <div className='container px-8 flex flex-col flex-nowrap'>
           <h1 className='text-5xl font-bold text-[#19b04b] mt-24 py-6'>
-            Reserva tu cancha <br /> al <br />
-            instante!
+            Reserva tu cancha en Rosario al instante!
           </h1>
           <p className='text-slate-100 text-2xl font-medium'>
             Reserva tu cancha <br /> favorita <br />
