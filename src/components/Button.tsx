@@ -7,6 +7,7 @@ interface data {
   onClick: null | ((e: React.FormEvent) => void)
   loading: boolean
   key: number | null
+  disabled: boolean
 }
 
 const Button = ({
@@ -16,6 +17,7 @@ const Button = ({
   onClick,
   loading,
   key,
+  disabled,
 }: data): JSX.Element => {
   const navigate = useNavigate()
 
@@ -28,6 +30,7 @@ const Button = ({
     <button
       onClick={handleClick}
       className={`w-56 h-14 text-black ${color} rounded-md flex justify-center items-center`}
+      disabled={disabled}
     >
       {!loading ? (
         <p className='text-lg font-bold text-white'>{text}</p>

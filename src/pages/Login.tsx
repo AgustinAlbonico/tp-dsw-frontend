@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useContext } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios'
 import Header from '../components/Header'
 import Button from '../components/Button'
 import { useNavigate } from 'react-router-dom'
+import { AuthContext } from '../context/AuthContext'
 //Config para que el browser me guarde las cookies
 axios.defaults.withCredentials = true
 
@@ -16,7 +17,10 @@ type userDataType = {
 const Login = (): JSX.Element => {
   const navigate = useNavigate()
 
+  const { setUser } = useContext(AuthContext)
+
   const [loading, setLoading] = useState(false)
+  const [disabled, setDisabled] = useState(false)
 
   const [loginData, setLoginData] = useState<userDataType>({
     email: '',
@@ -33,13 +37,15 @@ const Login = (): JSX.Element => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setDisabled(true)
     const url = 'http://localhost:3000/api/user/login'
     try {
       if (loginData.email && loginData.password) {
         const info = {
           ...(await axios.post(url, { ...loginData })),
         }
-        if (info) {
+        console.log(info.data.user)
+        if (info.data.user) {
           setTimeout(() => {
             navigate('/')
           }, 2000)
@@ -54,6 +60,7 @@ const Login = (): JSX.Element => {
         position: 'top-center',
         autoClose: 2000,
       })
+      setDisabled(false)
     } finally {
       setLoading(false)
     }
@@ -99,6 +106,7 @@ const Login = (): JSX.Element => {
                   color='bg-green-400'
                   onClick={handleSubmit}
                   loading={loading}
+                  disabled={disabled}
                 />
               </div>
             </form>

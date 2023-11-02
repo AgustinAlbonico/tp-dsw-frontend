@@ -1,9 +1,9 @@
 import { useSearchParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import Select from 'react-select'
-import Button from '../components/Button'
+import { ToastContainer, toast } from 'react-toastify'
 import Header from '../components/Header'
+import { useNavigate } from 'react-router-dom'
 
 type inputCancha = {
   zona: number | null
@@ -36,14 +36,12 @@ interface datosTipo {
 
 interface datosReserva {
   fecha_turno: string | null
-  hora_turno: string
-  fecha_hora_reserva: string
-  estado: string
-  id_usuario: number
-  nro_cancha: number
+  hora_turno: string | null
+  nro_cancha: number | null
 }
 
 const Canchas = (): JSX.Element => {
+  const navigate = useNavigate()
   //Extraigo los parametros de zona y tipo
   const [params] = useSearchParams()
   const cod_zona = params.get('zona')
@@ -52,8 +50,45 @@ const Canchas = (): JSX.Element => {
 
   const [loading, setLoading] = useState(false)
 
-  const [datosReserva, setDatosReserva] = useState<datosReserva | null>(null)
-  const [horario, setHorario] = useState<string>('')
+  const [datosReserva, setDatosReserva] = useState<datosReserva>({
+    fecha_turno: fecha_param,
+    nro_cancha: null,
+    hora_turno: null,
+  })
+
+  useEffect(() => {
+    if (
+      datosReserva.fecha_turno &&
+      datosReserva.hora_turno &&
+      datosReserva.nro_cancha
+    ) {
+      fetchData()
+        .then((info) => {
+          setTimeout(() => {
+            navigate('/')
+          }, 2000)
+          toast.success('Reserva realizada con exito', {
+            position: 'top-center',
+            autoClose: 2000,
+          })
+        })
+        .catch((error) => {
+          if (error.response.data.excede) {
+            setTimeout(() => {
+              navigate('/')
+            }, 2000)
+            return toast.error('Usted ya posee 3 reservas activas', {
+              position: 'top-center',
+              autoClose: 2000,
+            })
+          }
+          toast.error('Error al realizar la reserva!', {
+            position: 'top-center',
+            autoClose: 2000,
+          })
+        })
+    }
+  }, [datosReserva])
 
   //Creo un estado para traer la zona y tipo completos
   const [zona, setZona] = useState<datosZona | null>(null)
@@ -93,30 +128,31 @@ const Canchas = (): JSX.Element => {
     )
   }
 
-  const handleReserva = async (e) => {
+  const handleReserva = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
 
     //Traigo el nro de la cancha desde el boton
-    const nro_cancha = e.target[1].getAttribute('data-id')
+    const nro_cancha: number = parseInt(
+      e.currentTarget[1].getAttribute('data-id') as string
+    )
 
-    //Creo fecha de la reserva(fecha actual)
+    const horario = e.target[0].value as string
+
+    /*//Creo fecha de la reserva(fecha actual)
     const fecha = new Date()
     const año = fecha.getFullYear()
     const mes = String(fecha.getMonth() + 1).padStart(2, '0') // Sumamos 1 al mes ya que en JavaScript los meses van de 0 a 11.
     const dia = String(fecha.getDate()).padStart(2, '0')
-    const fechaFormateada = `${año}-${mes}-${dia}`
+    const fechaFormateada = `${año}-${mes}-${dia}`*/
 
-    setDatosReserva({
-      estado: 'reservado',
-      fecha_hora_reserva: fechaFormateada,
-      fecha_turno: fecha_param,
-      nro_cancha,
-      id_usuario: 16,
-      hora_turno: horario,
-    })
+    setDatosReserva({ ...datosReserva, nro_cancha, hora_turno: horario })
 
-    console.log(datosReserva)
+    setLoading(false)
+  }
+
+  const fetchData = async () => {
+    return await axios.post('http://localhost:3000/api/reserva/', datosReserva)
   }
 
   useEffect(() => {
@@ -132,7 +168,7 @@ const Canchas = (): JSX.Element => {
         <div className='bg-hero2 h-full bg-cover z-20 opacity-[85%] w-full flex-col flex justify-center items-center px-0'>
           <div className='relative'></div>
           <div className='w-[100%] flex-col items-end mt-12'>
-            {canchas.map((item) => (
+            {canchas.map((item, key) => (
               <form
                 className='w-[90%] bg-white my-2 mx-auto h-40 rounded-lg'
                 key={item.nro_cancha}
@@ -141,15 +177,14 @@ const Canchas = (): JSX.Element => {
                 <div className=''>
                   <div className='flex'>
                     <div className='font-bold'>
-                      <p>Cancha: {item.descripcion}</p>
+                      <p>
+                        Cancha: {item.descripcion} {item.nro_cancha}
+                      </p>
                       <p>Direccion: {`${item.calle} ${item.nro_calle}`}</p>
-                      <p>Costo: {item.costo_por_turno} $</p>
+                      <p>Costo: ${item.costo_por_turno}</p>
                     </div>
                     <div>
-                      <select
-                        required
-                        onChange={(e) => setHorario(e.target.value)}
-                      >
+                      <select required name='hora_turno'>
                         <option value=''>Selecciona un horario</option>
                         {item.horarios.map((horario, index) => (
                           <option key={index} value={horario}>
@@ -164,6 +199,7 @@ const Canchas = (): JSX.Element => {
                     type='submit'
                     data-id={item.nro_cancha}
                     className={`w-56 h-14 text-black bg-green-400 rounded-md flex justify-center items-center`}
+                    disabled={loading ? true : false}
                   >
                     {!loading ? (
                       <p className='text-lg font-bold text-white'>Reserva</p>
@@ -195,6 +231,7 @@ const Canchas = (): JSX.Element => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </section>
   )
 }

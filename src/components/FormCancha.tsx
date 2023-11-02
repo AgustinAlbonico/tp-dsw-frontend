@@ -46,7 +46,6 @@ const FormCancha = (): JSX.Element => {
     fetch(`${backend_url}/zona`)
       .then((res) => res.json())
       .then((data) => {
-        console.log('asdasd')
         setZonas(data)
       })
     //Cargo datos de los tipos de cancha
