@@ -3,20 +3,20 @@ import { useNavigate } from 'react-router-dom'
 interface data {
   color: string
   text: string
+  textColor: string
   to: string | null
   onClick: null | ((e: React.FormEvent) => void)
   loading: boolean
-  key: number | null
   disabled: boolean
 }
 
 const Button = ({
   color,
   text,
+  textColor,
   to = '',
   onClick,
   loading,
-  key,
   disabled,
 }: data): JSX.Element => {
   const navigate = useNavigate()
@@ -29,7 +29,9 @@ const Button = ({
   return (
     <button
       onClick={handleClick}
-      className={`w-56 h-14 text-black ${color} rounded-md flex justify-center items-center`}
+      className={`w-56 h-14 ${color} rounded-md flex justify-center items-center ${
+        textColor ? textColor : 'text-black'
+      }`}
       disabled={disabled}
     >
       {!loading ? (

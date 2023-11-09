@@ -1,11 +1,11 @@
-import { useState, useContext } from 'react'
-import { ToastContainer, toast } from 'react-toastify'
+import { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios'
 import Header from '../components/Header'
 import Button from '../components/Button'
-import { useNavigate } from 'react-router-dom'
-import { AuthContext } from '../context/AuthContext'
+import { useNavigate, useLocation } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 //Config para que el browser me guarde las cookies
 axios.defaults.withCredentials = true
 
@@ -16,8 +16,11 @@ type userDataType = {
 
 const Login = (): JSX.Element => {
   const navigate = useNavigate()
+  const location = useLocation()
 
-  const { setUser } = useContext(AuthContext)
+  const from = location.state?.from?.pathname || '/'
+
+  const { user, setUser } = useAuth()
 
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(false)
@@ -26,6 +29,11 @@ const Login = (): JSX.Element => {
     email: '',
     password: '',
   })
+
+  //Si el usuario ya esta logueado lo redirijo
+  useEffect(() => {
+    user && navigate('/')
+  }, [])
 
   const handleDataInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginData({
@@ -44,10 +52,9 @@ const Login = (): JSX.Element => {
         const info = {
           ...(await axios.post(url, { ...loginData })),
         }
-        console.log(info.data.user)
         if (info.data.user) {
           setTimeout(() => {
-            navigate('/')
+            navigate(from, { replace: true })
           }, 2000)
           toast.success('Inicio de sesion correcto', {
             position: 'top-center',
@@ -113,7 +120,6 @@ const Login = (): JSX.Element => {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </section>
   )
 }

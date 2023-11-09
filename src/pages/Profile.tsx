@@ -1,7 +1,7 @@
 import Header from '../components/Header'
 import Button from '../components/Button'
 import { ToastContainer, toast } from 'react-toastify'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
@@ -14,7 +14,7 @@ interface registerData {
   password: string
 }
 
-const Register = (): JSX.Element => {
+const Profile = (): JSX.Element => {
   const navigate = useNavigate()
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -32,11 +32,6 @@ const Register = (): JSX.Element => {
     password: '',
   })
 
-  //Si el usuario esta logueado no deberia poder registrarse
-  useEffect(() => {
-    //user ?? navigate('/')
-  }, [])
-
   const handleDataInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputData({
       ...inputData,
@@ -44,14 +39,14 @@ const Register = (): JSX.Element => {
     })
   }
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (inputData.password !== rptPassword) {
       setCoinciden(false)
     } else {
       setLoading(true)
       setCoinciden(true)
-      const url = 'http://localhost:3000/api/user/register'
+      const url = 'http://localhost:3000/api/user/'
       try {
         if (
           inputData.email &&
@@ -103,7 +98,7 @@ const Register = (): JSX.Element => {
         <div className='bg-hero2 h-full bg-cover bg-no-repeat z-20 opacity-[85%] w-full flex-col flex justify-center px-8'>
           <div className='container py-4 flex flex-col flex-nowrap bg-white rounded-lg shadow-lg mt-12'>
             <form className='flex flex-col items-center h-full my-8 font-bold'>
-              <h1 className='text-3xl text-center text-teal-500'>Registrate</h1>
+              <h1 className='text-3xl text-center text-teal-500'>Mi perfil</h1>
               <div className='w-full flex flex-col gap-y-2 items-center mt-6'>
                 <div className='flex flex-col gap-y-1 w-[80%]'>
                   <p className=''>Nombre completo:</p>
@@ -189,9 +184,9 @@ const Register = (): JSX.Element => {
                 </div>
 
                 <Button
-                  text='Registrate'
+                  text='Actualiza'
                   color='bg-green-400'
-                  onClick={handleRegister}
+                  onClick={handleUpdate}
                   loading={loading}
                 />
               </div>
@@ -199,9 +194,8 @@ const Register = (): JSX.Element => {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </section>
   )
 }
 
-export default Register
+export default Profile

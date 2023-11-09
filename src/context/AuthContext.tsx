@@ -12,12 +12,19 @@ type UserContextProviderType = {
 type AuthUser = {
   id_usuario: number
   email: string
+  nombre: string
+  apellido: string
 }
 
-export const AuthContext = createContext({} as UserContextType)
+const AuthContext = createContext({} as UserContextType)
 
 export const AuthContextProvider = ({ children }: UserContextProviderType) => {
-  const [user, setUser] = useState<AuthUser | null>(null)
+  const [user, setUser] = useState<AuthUser | null>({
+    id_usuario: 1,
+    email: 'agusitasdasd',
+    nombre: 'Agustin',
+    apellido: 'Albonico',
+  })
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>
@@ -25,3 +32,5 @@ export const AuthContextProvider = ({ children }: UserContextProviderType) => {
     </AuthContext.Provider>
   )
 }
+
+export default AuthContext

@@ -5,12 +5,16 @@ import axios from 'axios'
 import Button from '../components/Button'
 import Cruz from '../assets/cruz.svg'
 
+interface userData {
+  id_usuario: number
+}
+
 const ValidateEmail = (): JSX.Element => {
   const { token } = useParams()
 
-  const [verified, setVerified] = useState<boolean>(false)
-  const [message, setMessage] = useState<string>('')
-  const [user, setUser] = useState({})
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const [user, setUser] = useState<userData | null>(null)
 
   useEffect(() => {
     verifyEmail()
@@ -18,15 +22,16 @@ const ValidateEmail = (): JSX.Element => {
 
   const verifyEmail = async () => {
     try {
-      const { message, user } = (
-        await axios.put(
-          `http://localhost:3000/api/user/validate-email/${token}`
-        )
-      ).data
+      const res = await axios.put(
+        `http://localhost:3000/api/user/validate-email/${token}`
+      )
+
+      console.log(res)
+
       setMessage(message)
-      setUser(user)
+      setUser(res.data.user)
     } catch (error) {
-      console.log(error)
+      setError(error?.response?.data?.message)
     }
   }
 
@@ -37,9 +42,9 @@ const ValidateEmail = (): JSX.Element => {
         <div className='bg-hero2 h-full bg-cover bg-no-repeat z-20 opacity-[85%] w-full flex-col flex justify-center px-8'>
           <div className='container py-4 h-[40%] flex flex-col gap-12 justify-center items-center flex-nowrap bg-white w-full rounded-lg shadow-lg'>
             <div>
-              {user ? (
+              {!error ? (
                 <svg
-                  className='h-16'
+                  className='h-16 pt-36'
                   xmlns='http://www.w3.org/2000/svg'
                   x='0px'
                   y='0px'
@@ -84,11 +89,11 @@ const ValidateEmail = (): JSX.Element => {
               )}
             </div>
             <p
-              className={`${
-                user ? 'text-green-400' : 'text-red-500'
+              className={`text-center ${
+                !error ? 'text-green-400' : 'text-red-500'
               } font-medium text-2xl`}
             >
-              {message}
+              {error ? error : message}
             </p>
 
             {user ? (

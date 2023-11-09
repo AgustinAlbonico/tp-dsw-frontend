@@ -68,7 +68,7 @@ const FormCancha = (): JSX.Element => {
     setLoading(true)
     if (selectedZona && selectedTipoCancha && selectedDate) {
       return navigate(
-        `/canchas?zona=${selectedZona?.cod_zona}&tipo-cancha=${selectedTipoCancha?.cod_tipo}&fecha=${selectedDate}`
+        `/canchas?zona=${selectedZona?.cod_zona}&tipo-cancha=${selectedTipoCancha?.cod_tipo}&fecha=${selectedDate}?&page=1`
       )
     }
     setLoading(false)

@@ -47,8 +47,10 @@ const Canchas = (): JSX.Element => {
   const cod_zona = params.get('zona')
   const cod_tipo = params.get('tipo-cancha')
   const fecha_param = params.get('fecha')
+  //const page = params.get('page')
 
   const [loading, setLoading] = useState(false)
+  const [page, setPage] = useState(1)
 
   const [datosReserva, setDatosReserva] = useState<datosReserva>({
     fecha_turno: fecha_param,
@@ -109,7 +111,7 @@ const Canchas = (): JSX.Element => {
     setCanchas(
       (
         await axios.get(
-          `http://localhost:3000/api/cancha?zona=${cancha?.zona}&tipoCancha=${cancha?.tipoCancha}&fecha=${cancha?.fecha}`
+          `http://localhost:3000/api/cancha?zona=${cancha?.zona}&tipoCancha=${cancha?.tipoCancha}&fecha=${cancha?.fecha}&page=${page}`
         )
       ).data
     )
