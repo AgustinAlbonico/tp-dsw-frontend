@@ -4,7 +4,7 @@ const PrivateRoutes = (): JSX.Element => {
   const location = useLocation()
 
   //estatico
-  const user = false
+  const user = true
 
   return user ? (
     <Outlet />

@@ -26,9 +26,7 @@ const ValidateEmail = (): JSX.Element => {
         `http://localhost:3000/api/user/validate-email/${token}`
       )
 
-      console.log(res)
-
-      setMessage(message)
+      setMessage(res.data.message)
       setUser(res.data.user)
     } catch (error) {
       setError(error?.response?.data?.message)
@@ -42,9 +40,9 @@ const ValidateEmail = (): JSX.Element => {
         <div className='bg-hero2 h-full bg-cover bg-no-repeat z-20 opacity-[85%] w-full flex-col flex justify-center px-8'>
           <div className='container py-4 h-[40%] flex flex-col gap-12 justify-center items-center flex-nowrap bg-white w-full rounded-lg shadow-lg'>
             <div>
-              {!error ? (
+              {user ? (
                 <svg
-                  className='h-16 pt-36'
+                  className='h-16'
                   xmlns='http://www.w3.org/2000/svg'
                   x='0px'
                   y='0px'
@@ -90,10 +88,10 @@ const ValidateEmail = (): JSX.Element => {
             </div>
             <p
               className={`text-center ${
-                !error ? 'text-green-400' : 'text-red-500'
+                user ? 'text-green-400' : 'text-red-500'
               } font-medium text-2xl`}
             >
-              {error ? error : message}
+              {!user ? error : message}
             </p>
 
             {user ? (

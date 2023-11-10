@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Logo from '../assets/mas-chica.svg'
 import { RxTextAlignJustify, RxCross1 } from 'react-icons/rx'
 import MobileNavbar from './MobileNavbar'
+import { Link } from 'react-router-dom'
 
 const Header = (): JSX.Element => {
   const [mobileNav, setMobileNav] = useState(false)
@@ -28,9 +29,9 @@ const Header = (): JSX.Element => {
         <div className='container mx-auto'>
           <div className='flex justify-between items-center mx-auto px-8'>
             {/* Logo */}
-            <a href='/' className=''>
+            <Link to='/' className=''>
               <img src={Logo} alt='PitchBooking-Logo' className='h-16' />
-            </a>
+            </Link>
             {/* Boton mobileNav */}
             <div
               className='text-white font-bold cursor-pointer md:hidden'

@@ -4,21 +4,25 @@ import { AiOutlineHome } from 'react-icons/ai'
 import { BsPeople } from 'react-icons/bs'
 import { HiOutlineInboxIn } from 'react-icons/hi'
 import useAuth from '../hooks/useAuth'
+import { Link } from 'react-router-dom'
 
 const MobileNavbar = (): JSX.Element => {
   const { user } = useAuth()
 
-  console.log(user)
+  let a = false
 
   return (
     <nav className='bg-white w-full h-full flex flex-col justify-between'>
       <ul className='text-center h-full flex flex-col items-center justify-start gap-y-6 py-16'>
         <li className='w-[70%]'>
-          <a href='/' className='text-xl font-bold justify-between flex w-full'>
+          <Link
+            to='/'
+            className='text-xl font-bold justify-between flex w-full'
+          >
             <AiOutlineHome size='28' />
             <p>Inicio</p>
             <p></p>
-          </a>
+          </Link>
         </li>
         <li className='w-[70%]'>
           <a href='#' className='text-xl font-bold justify-between flex w-full'>
@@ -42,7 +46,7 @@ const MobileNavbar = (): JSX.Element => {
           </a>
         </li>
         <div className='w-[80%] mx-auto h-[1px] bg-neutral-800 ' />
-        {!user ? (
+        {!a ? (
           <>
             <Button text='Iniciar sesion' color='bg-green-400' to='/login' />
             <Button text='Registrarse' color='bg-red-400' to='/register' />

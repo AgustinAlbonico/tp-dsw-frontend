@@ -32,7 +32,7 @@ const Login = (): JSX.Element => {
 
   //Si el usuario ya esta logueado lo redirijo
   useEffect(() => {
-    user && navigate('/')
+    //user && navigate('/')
   }, [])
 
   const handleDataInput = (e: React.ChangeEvent<HTMLInputElement>) => {

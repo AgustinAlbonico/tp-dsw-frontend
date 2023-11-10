@@ -47,10 +47,10 @@ const Canchas = (): JSX.Element => {
   const cod_zona = params.get('zona')
   const cod_tipo = params.get('tipo-cancha')
   const fecha_param = params.get('fecha')
-  //const page = params.get('page')
+  const page = params.get('page')
 
   const [loading, setLoading] = useState(false)
-  const [page, setPage] = useState(1)
+  //const [page, setPage] = useState(1)
 
   const [datosReserva, setDatosReserva] = useState<datosReserva>({
     fecha_turno: fecha_param,
@@ -172,20 +172,18 @@ const Canchas = (): JSX.Element => {
           <div className='w-[100%] flex-col items-end mt-12'>
             {canchas.map((item, key) => (
               <form
-                className='w-[90%] bg-white my-2 mx-auto h-40 rounded-lg'
+                className='w-[90%] bg-white my-2 mx-auto h-40 rounded-lg p-2'
                 key={item.nro_cancha}
                 onSubmit={handleReserva}
               >
-                <div className=''>
+                <div className='flex flex-col items-center'>
                   <div className='flex'>
                     <div className='font-bold'>
-                      <p>
-                        Cancha: {item.descripcion} {item.nro_cancha}
-                      </p>
+                      <p>Cancha: {item.descripcion}</p>
                       <p>Direccion: {`${item.calle} ${item.nro_calle}`}</p>
                       <p>Costo: ${item.costo_por_turno}</p>
                     </div>
-                    <div>
+                    <div className='h-full'>
                       <select required name='hora_turno'>
                         <option value=''>Selecciona un horario</option>
                         {item.horarios.map((horario, index) => (
@@ -200,7 +198,7 @@ const Canchas = (): JSX.Element => {
                   <button
                     type='submit'
                     data-id={item.nro_cancha}
-                    className={`w-56 h-14 text-black bg-green-400 rounded-md flex justify-center items-center`}
+                    className={`w-48 h-12 text-black bg-green-400 rounded-md flex justify-center items-center`}
                     disabled={loading ? true : false}
                   >
                     {!loading ? (
@@ -233,7 +231,6 @@ const Canchas = (): JSX.Element => {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </section>
   )
 }
