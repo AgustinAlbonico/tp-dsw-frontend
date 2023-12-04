@@ -13,6 +13,7 @@ import ValidateEmail from './pages/ValidateEmail'
 import PrivateRoutes from './components/privateRoutes'
 import App from './App'
 import Profile from './pages/Profile'
+import AdminCanchas from './pages/AdminCanchas'
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,6 +26,7 @@ export const router = createBrowserRouter(
       <Route path='' element={<PrivateRoutes />}>
         <Route path='/profile' element={<Profile />} />
         <Route path='/canchas' element={<Canchas />} />
+        <Route path='/admincanchas' element={<AdminCanchas />} />
       </Route>
     </Route>
   )
