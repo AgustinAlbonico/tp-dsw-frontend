@@ -129,8 +129,7 @@ function ModalUpdate({ editData , editCancha , setShowModal }) {
     setShowModal(false);}
   }
   return (
-      <section>
-      
+      <section>      
           <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none backdrop-blur-[1px]">
             <div className="relative w-[90%] h-[80%] my-6 mx-auto max-w-3xl ">
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
