@@ -49,7 +49,7 @@ const AdminCanchas = () => {
   // abre el modal de actualizar y guarda la data del equipo a actualizar
   const modalupt = (i) => {
     setShowModalUpt(true);
-    setEditData(i);
+    setEditData(i)
   }
  
 
