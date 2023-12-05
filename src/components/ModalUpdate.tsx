@@ -119,7 +119,6 @@ function ModalUpdate({ editData , editCancha , setShowModal }) {
     }
     return isError ? errors : null; 
   }
-
   // guarda los cambios 
   const onSubmit = (e) => {
     e.preventDefault();

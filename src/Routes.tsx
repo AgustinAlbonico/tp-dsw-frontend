@@ -15,6 +15,7 @@ import App from './App'
 import Profile from './pages/Profile'
 import AdminCanchas from './pages/AdminCanchas'
 
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>

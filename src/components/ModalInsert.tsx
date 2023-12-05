@@ -35,6 +35,7 @@ function ModalInsert({ addCancha , setShowModal}) {
       [e.target.name]: e.target.value
     })
   }
+  
   // verifica los campos del input
   const validateValues = (inputValues) => {
     let errors = {};
