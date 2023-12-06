@@ -13,8 +13,9 @@ import ValidateEmail from './pages/ValidateEmail'
 import PrivateRoutes from './components/privateRoutes'
 import App from './App'
 import Profile from './pages/Profile'
-import AdminReservasCliente from './pages/admin/AdminReservasCliente';  // New
-import AdminReservasHoy from './pages/admin/AdminReservasHoy';  // New
+import AdminReservasCliente from './pages/AdminReservasCliente'  // New
+import AdminReservasHoy from './pages/AdminReservasHoy'  // New
+
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,14 +28,8 @@ export const router = createBrowserRouter(
       <Route path='' element={<PrivateRoutes />}>
         <Route path='/profile' element={<Profile />} />
         <Route path='/canchas' element={<Canchas />} />
-        <Route
-          path="/admin/reservas/cliente/:idCliente"  // Nueva ruta para reservas del cliente
-          element={<AdminReservasCliente />}
-        />
-        <Route
-          path="/admin/reservas/hoy"  // Nueva ruta para reservas de hoy
-          element={<AdminReservasHoy />}
-        />
+        <Route path="/AdminReservasCliente" element={<AdminReservasCliente />} />
+        <Route path="/AdminReservasHoy" element={<AdminReservasHoy />} />
       </Route>
     </Route>
   )

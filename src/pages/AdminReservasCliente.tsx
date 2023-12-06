@@ -1,6 +1,6 @@
 // AdminReservasCliente.tsx
 
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 const AdminReservasCliente: React.FC = () => {
   const [userId, setUserId] = useState<string>('');

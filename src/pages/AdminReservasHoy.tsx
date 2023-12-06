@@ -1,6 +1,6 @@
 // AdminReservasHoy.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 const AdminReservasHoy: React.FC = () => {
   const [reservasHoy, setReservasHoy] = useState<any[]>([]);
