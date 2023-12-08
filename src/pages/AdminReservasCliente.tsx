@@ -11,7 +11,6 @@ const AdminReservasCliente: React.FC = () => {
     id_usuario: number;
     nombre: string;
     apellido: string;
-    email: string;
   }
   
   interface datosReserva {
@@ -35,9 +34,9 @@ const AdminReservasCliente: React.FC = () => {
 
   const handleVerReservasClick = async () => {
     try {
-      const { status, data } = await axios.get(`/api/reservas/cliente/${userId}`);
+      const { status, data } = await axios.get(`http://localhost:3000/api/reservas/cliente/${userId}`); //data se carga con las reservas
       if (status === 200) {
-        setReservas(data);
+        setReservas(data); //Se le asigna a reservas lo que contiene data
         setMensaje(null);
       } else {
         setReservas([]);
@@ -49,10 +48,6 @@ const AdminReservasCliente: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    // Se ejecuta solo una vez al montar el componente
-  }, []);
-
   return (
     <section>
       <div className='container h-screen w-full'>
@@ -62,7 +57,7 @@ const AdminReservasCliente: React.FC = () => {
             <p className='text-xl font-bold text-2xl text-black my-0'>Reservas del Cliente</p>
             <hr className="w-60 h-0.5 bg-gray-100 border-0 rounded md:my-2 dark:bg-green-700"></hr>
             <div className='flex flex-col items-center'>
-            <label className='w-[80%] text-center border-b-[1.5rem] bg-white'>
+            <label className='w-[80%] text-center my-4 bg-white'>
                   Ingrese el ID del Cliente:
                   <input
                     type="text"
@@ -77,19 +72,38 @@ const AdminReservasCliente: React.FC = () => {
                   onClick={handleVerReservasClick}
                 />
              </div>
-            {mensaje && <p>{mensaje}</p>}
+            {mensaje && <p>{mensaje}</p>}   {/*Si es mensaje no es null*/}
             {reservas.length > 0 && (
-              <div>
-                {reservas.map((reserva) => (
-                  <div key={reserva.id_reserva} className='my-4'>
-                    <p>Fecha: {new Date(reserva.fecha_turno).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</p>
-                    <p>Hora Inicio: {new Date(reserva.hora_turno).toLocaleTimeString('es-ES', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' })}</p>
-                    {/* Otros detalles de la reserva */}
-                  </div>
-                ))}
-              </div>
+              <>
+                <p className='text-xl font-bold text-2xl text-black my-0'>Historial de reservas de {nombre} {apellido} ({userId}) </p>
+                <hr className="w-60 h-0.5 bg-gray-100 border-0 rounded md:my-2 dark:bg-green-700"></hr>
+                <table className='table-fixed justify-center border-separate border-spacing-x-0.5 border-spacing-y-1.5 mx-1.5'>
+                <thead className='tracking-wider'>
+                  <tr>
+                    <th className='font-bold text-sm'>Fecha</th>
+                    <th className='font-bold text-sm'>Hora</th>
+                    <th className='font-bold text-sm'>Tipo de Cancha</th>
+                    <th className='font-bold text-sm'>Dirección</th>
+                    <th className='font-bold text-sm'>Estado</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody className='text-center space-between-10 text-xs'>
+                  {reservas.map((item, index) => (
+                    <tr key={item.id_reserva}>
+                      <td>{new Date(item.fecha_turno).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</td>
+                      <td>{new Date(item.hora_turno).toLocaleTimeString('es-ES', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' })}</td>
+                      <td>{item.tipo_cancha}</td>
+                      <td>{item.direccion}</td>
+                      <td>{item.estado}</td>
+                      </tr>
+                  ))}
+                </tbody>
+              </table>
+              </>
             )}
-          </div>
+        </div>
         </div>
       </div>
     </section>
@@ -97,6 +111,7 @@ const AdminReservasCliente: React.FC = () => {
 };
 
 export default AdminReservasCliente;
+
 
 
 

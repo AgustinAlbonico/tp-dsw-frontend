@@ -17,15 +17,15 @@ const ValidateEmail = (): JSX.Element => {
   const [user, setUser] = useState<userData | null>(null)
 
   useEffect(() => {
-    verifyEmail()
+    verifyEmail()  //Llama a la función verifyEmail cuando el componente (token) se cargue 
   }, [])
 
   const verifyEmail = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:3000/api/user/validate-email/${token}`
+        `http://localhost:3000/api/user/validate-email/${token}` //Le asigna el valor que asume el token
       )
-
+      //Si la rta es exitosa se actiliza serMessage con el valor de res.data.message y lo mismo en User
       setMessage(res.data.message)
       setUser(res.data.user)
     } catch (error) {
