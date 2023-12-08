@@ -20,12 +20,22 @@ const AdminReservasCliente: React.FC = () => {
     estado: string;
     id_usuario: number;
     nro_cancha: number;
-    cancha: string;
+    cancha: {
+      tipo_cancha: {
+        descripcion: string;
+      };
+      calle: string;
+      nro_calle: number; 
+    };
     usuario: string;
+    tipo_cancha_descripcion: string; 
+    direccion_cancha: string;
+    nro_direccion_cancha: number;
   }
 
   const [userId, setUserId] = useState<string>('');
   const [reservas, setReservas] = useState<datosReserva[]>([]);
+  const [datosCliente, setDatosCliente] = useState<datosCliente | null>(null); 
   const [mensaje, setMensaje] = useState<string | null>(null);
 
   const handleUserIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,19 +44,31 @@ const AdminReservasCliente: React.FC = () => {
 
   const handleVerReservasClick = async () => {
     try {
-      const { status, data } = await axios.get(`http://localhost:3000/api/reservas/cliente/${userId}`); //data se carga con las reservas
+      const { status, data } = await axios.get(`http://localhost:3000/api/reservas/cliente/${userId}`);
       if (status === 200) {
-        setReservas(data); //Se le asigna a reservas lo que contiene data
+        const reservasActualizadas = data.reservas.map((reserva: datosReserva) => ({
+          ...reserva,
+          tipo_cancha_descripcion: reserva.cancha.tipo_cancha.descripcion,
+          direccion_cancha: reserva.cancha.calle,
+          nro_direccion_cancha: reserva.cancha.nro_calle,
+        }));
+  
+        setReservas(reservasActualizadas);
+        setDatosCliente(data.cliente);
         setMensaje(null);
       } else {
         setReservas([]);
+        setDatosCliente(null);
         setMensaje('Cliente no encontrado');
       }
     } catch (error) {
       console.error('Error al obtener las reservas del cliente:', error);
+      setReservas([]);
+      setDatosCliente(null);
       setMensaje('Ocurrió un error al cargar las reservas');
     }
   };
+  
 
   return (
     <section>
@@ -75,7 +97,7 @@ const AdminReservasCliente: React.FC = () => {
             {mensaje && <p>{mensaje}</p>}   {/*Si es mensaje no es null*/}
             {reservas.length > 0 && (
               <>
-                <p className='text-xl font-bold text-2xl text-black my-0'>Historial de reservas de {nombre} {apellido} ({userId}) </p>
+                <p className='text-xl font-bold text-2xl text-black my-0'>Historial de reservas de {datosCliente.nombre} {datosCliente.apellido} ({userId}) </p>
                 <hr className="w-60 h-0.5 bg-gray-100 border-0 rounded md:my-2 dark:bg-green-700"></hr>
                 <table className='table-fixed justify-center border-separate border-spacing-x-0.5 border-spacing-y-1.5 mx-1.5'>
                 <thead className='tracking-wider'>
@@ -83,7 +105,8 @@ const AdminReservasCliente: React.FC = () => {
                     <th className='font-bold text-sm'>Fecha</th>
                     <th className='font-bold text-sm'>Hora</th>
                     <th className='font-bold text-sm'>Tipo de Cancha</th>
-                    <th className='font-bold text-sm'>Dirección</th>
+                    <th className='font-bold text-sm'>Calle</th>
+                    <th className='font-bold text-sm'>Nro</th>
                     <th className='font-bold text-sm'>Estado</th>
                     <th></th>
                     <th></th>
@@ -94,8 +117,9 @@ const AdminReservasCliente: React.FC = () => {
                     <tr key={item.id_reserva}>
                       <td>{new Date(item.fecha_turno).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</td>
                       <td>{new Date(item.hora_turno).toLocaleTimeString('es-ES', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' })}</td>
-                      <td>{item.tipo_cancha}</td>
-                      <td>{item.direccion}</td>
+                      <td>{item.tipo_cancha_descripcion}</td>
+                      <td>{item.direccion_cancha}</td>
+                      <td>{item.nro_direccion_cancha}</td>
                       <td>{item.estado}</td>
                       </tr>
                   ))}
