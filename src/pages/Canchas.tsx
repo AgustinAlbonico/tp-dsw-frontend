@@ -1,62 +1,61 @@
-import { useSearchParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import Header from '../components/Header'
-import { useNavigate } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 type inputCancha = {
-  zona: number | null
-  tipoCancha: number | null
-  fecha: string | null
-}
+  zona: number | null;
+  tipoCancha: number | null;
+  fecha: string | null;
+};
 
 interface datosCancha {
-  nro_cancha: number
-  descripcion: string
-  costo_por_turno: number
-  calle: string
-  nro_calle: number
-  horario_apertura: string
-  horario_cierre: string
-  cod_zona: number
-  cod_tipo: number
-  horarios: string[]
+  nro_cancha: number;
+  descripcion: string;
+  costo_por_turno: number;
+  calle: string;
+  nro_calle: number;
+  horario_apertura: string;
+  horario_cierre: string;
+  cod_zona: number;
+  cod_tipo: number;
+  horarios: string[];
 }
 
 interface datosZona {
-  cod_zona: number
-  descripcion: string
+  cod_zona: number;
+  descripcion: string;
 }
 
 interface datosTipo {
-  cod_tipo: number
-  descripcion: string
+  cod_tipo: number;
+  descripcion: string;
 }
 
 interface datosReserva {
-  fecha_turno: string | null
-  hora_turno: string | null
-  nro_cancha: number | null
+  fecha_turno: string | null;
+  hora_turno: string | null;
+  nro_cancha: number | null;
 }
 
 const Canchas = (): JSX.Element => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   //Extraigo los parametros de zona y tipo
-  const [params] = useSearchParams()
-  const cod_zona = params.get('zona')
-  const cod_tipo = params.get('tipo-cancha')
-  const fecha_param = params.get('fecha')
-  const page = params.get('page')
+  const [params] = useSearchParams();
+  const cod_zona = params.get('zona');
+  const cod_tipo = params.get('tipo-cancha');
+  const fecha_param = params.get('fecha');
+  const page = params.get('page');
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   //const [page, setPage] = useState(1)
 
   const [datosReserva, setDatosReserva] = useState<datosReserva>({
     fecha_turno: fecha_param,
     nro_cancha: null,
     hora_turno: null,
-  })
+  });
 
   useEffect(() => {
     if (
@@ -65,47 +64,47 @@ const Canchas = (): JSX.Element => {
       datosReserva.nro_cancha
     ) {
       fetchData()
-        .then((info) => {
+        .then(() => {
           setTimeout(() => {
-            navigate('/')
-          }, 2000)
+            navigate('/');
+          }, 2000);
           toast.success('Reserva realizada con exito', {
             position: 'top-center',
             autoClose: 2000,
-          })
+          });
         })
         .catch((error) => {
           if (error.response.data.excede) {
             setTimeout(() => {
-              navigate('/')
-            }, 2000)
+              navigate('/');
+            }, 2000);
             return toast.error('Usted ya posee 3 reservas activas', {
               position: 'top-center',
               autoClose: 2000,
-            })
+            });
           }
           toast.error('Error al realizar la reserva!', {
             position: 'top-center',
             autoClose: 2000,
-          })
-        })
+          });
+        });
     }
-  }, [datosReserva])
+  }, [datosReserva]);
 
   //Creo un estado para traer la zona y tipo completos
-  const [zona, setZona] = useState<datosZona | null>(null)
-  const [tipo, setTipo] = useState<datosTipo | null>(null)
+  ////const [zona, setZona] = useState<datosZona | null>(null);
+  ////const [tipo, setTipo] = useState<datosTipo | null>(null);
 
   //Estado con los datos actuales de la cancha
   const [cancha, setCancha] = useState<inputCancha>({
     zona: cod_zona !== null ? parseInt(cod_zona, 10) : null,
     tipoCancha: cod_tipo !== null ? parseInt(cod_tipo, 10) : null,
     fecha: fecha_param,
-  })
+  });
 
   //Estado para guardar todas las canchas disponibles
-  const [canchas, setCanchas] = useState<datosCancha[]>([])
-  const [selectedOption, setSelectedOption] = useState(null)
+  const [canchas, setCanchas] = useState<datosCancha[]>([]);
+  ////const [selectedOption, setSelectedOption] = useState(null);
 
   const getCanchas = async () => {
     setCanchas(
@@ -114,32 +113,32 @@ const Canchas = (): JSX.Element => {
           `http://localhost:3000/api/cancha?zona=${cancha?.zona}&tipoCancha=${cancha?.tipoCancha}&fecha=${cancha?.fecha}&page=${page}`
         )
       ).data
-    )
-  }
+    );
+  };
 
   const getZona = async () => {
     setZona(
       (await axios.get(`http://localhost:3000/api/zona/${cod_zona}`)).data
-    )
-  }
+    );
+  };
 
   const getTipo = async () => {
     setTipo(
       (await axios.get(`http://localhost:3000/api/tipo_cancha/${cod_tipo}`))
         .data
-    )
-  }
+    );
+  };
 
   const handleReserva = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     //Traigo el nro de la cancha desde el boton
     const nro_cancha: number = parseInt(
       e.currentTarget[1].getAttribute('data-id') as string
-    )
+    );
 
-    const horario = e.target[0].value as string
+    const horario = e.target[0].value as string;
 
     /*//Creo fecha de la reserva(fecha actual)
     const fecha = new Date()
@@ -148,31 +147,29 @@ const Canchas = (): JSX.Element => {
     const dia = String(fecha.getDate()).padStart(2, '0')
     const fechaFormateada = `${año}-${mes}-${dia}`*/
 
-    setDatosReserva({ ...datosReserva, nro_cancha, hora_turno: horario })
+    setDatosReserva({ ...datosReserva, nro_cancha, hora_turno: horario });
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const fetchData = async () => {
-    return await axios.post('http://localhost:3000/api/reserva/', datosReserva)
-  }
+    return await axios.post('http://localhost:3000/api/reserva/', datosReserva);
+  };
 
   useEffect(() => {
-    getZona()
-    getTipo()
-    getCanchas()
-  }, [])
+    getZona();
+    getTipo();
+    getCanchas();
+  }, []);
 
   return (
     <section>
-      <div className='container h-screen w-full'>
-        <Header />
+      <div className='h-screen w-full'>
         <div className='bg-hero2 h-full bg-cover z-20 opacity-[85%] w-full flex-col flex justify-center items-center px-0'>
-          <div className='relative'></div>
-          <div className='w-[100%] flex-col items-end mt-12'>
-            {canchas.map((item, key) => (
+          <div className='w-[90%] flex-col items-end mt-12 md:grid md:grid-cols-4 bg-white'>
+            {canchas.map((item) => (
               <form
-                className='w-[90%] bg-white my-2 mx-auto h-40 rounded-lg p-2'
+                className='relative my-2 mx-auto h-40 rounded-lg p-2 space-y-16'
                 key={item.nro_cancha}
                 onSubmit={handleReserva}
               >
@@ -232,7 +229,7 @@ const Canchas = (): JSX.Element => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Canchas
+export default Canchas;

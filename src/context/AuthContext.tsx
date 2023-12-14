@@ -1,36 +1,45 @@
-import { createContext, useState } from 'react'
+import axios from 'axios';
+import { createContext, useEffect, useState } from 'react';
 
 export type UserContextType = {
-  user: any
-  setUser: any
-}
+  user: any;
+  setUser: any;
+};
 
 type UserContextProviderType = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 type AuthUser = {
-  id_usuario: number
-  email: string
-  nombre: string
-  apellido: string
-}
+  id_usuario?: number;
+  email?: string;
+  nombre?: string;
+  apellido?: string;
+};
 
-const AuthContext = createContext({} as UserContextType)
+const AuthContext = createContext({} as UserContextType);
 
 export const AuthContextProvider = ({ children }: UserContextProviderType) => {
-  const [user, setUser] = useState<AuthUser | null>({
-    id_usuario: 1,
-    email: 'agusitasdasd',
-    nombre: 'Agustin',
-    apellido: 'Albonico',
-  })
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  const checkLogin = async () => {
+    try {
+      const { data } = await axios.get('http://localhost:3000/api/user/info');
+      setUser(data);
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    checkLogin();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};
 
-export default AuthContext
+export default AuthContext;

@@ -1,78 +1,78 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { MdOutlinePlace } from 'react-icons/md'
-import { PiSoccerBallDuotone } from 'react-icons/pi'
-import { AiTwotoneCalendar } from 'react-icons/ai'
-import Button from './Button'
-import Select from 'react-select'
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { MdOutlinePlace } from 'react-icons/md';
+import { PiSoccerBallDuotone } from 'react-icons/pi';
+import { AiTwotoneCalendar } from 'react-icons/ai';
+import Button from './Button';
+import Select from 'react-select';
 
-import 'react-datepicker/dist/react-datepicker.css'
+import 'react-datepicker/dist/react-datepicker.css';
 
-const backend_url: string = import.meta.env.VITE_BACKEND_URL
+const backend_url: string = import.meta.env.VITE_BACKEND_URL;
 
 type datosCancha = {
-  cod_zona: number
-  cod_tipo: number
-  fecha: string
-}
+  cod_zona: number;
+  cod_tipo: number;
+  fecha: string;
+};
 
 interface datosZona {
-  cod_zona: number
-  descripcion: string
+  cod_zona: number;
+  descripcion: string;
 }
 
 interface datosTipoCancha {
-  cod_tipo: number
-  descripcion: string
+  cod_tipo: number;
+  descripcion: string;
 }
 
 const FormCancha = (): JSX.Element => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const [zonas, setZonas] = useState<datosZona[]>([])
-  const [tiposCanchas, setTipoCanchas] = useState<datosTipoCancha[]>([])
+  const [zonas, setZonas] = useState<datosZona[]>([]);
+  const [tiposCanchas, setTipoCanchas] = useState<datosTipoCancha[]>([]);
 
-  const [selectedZona, setSelectedZona] = useState<datosZona | null>(null)
+  const [selectedZona, setSelectedZona] = useState<datosZona | null>(null);
   const [selectedTipoCancha, setSelectedTipoCancha] =
-    useState<datosTipoCancha | null>(null)
-  const [selectedDate, setSelectedDate] = useState<string | null>()
+    useState<datosTipoCancha | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>();
 
-  const [cancha, setCancha] = useState<datosCancha | null>(null)
+  const [cancha, setCancha] = useState<datosCancha | null>(null);
 
   useEffect(() => {
     //Cargo datos de las zonas
     fetch(`${backend_url}/zona`)
       .then((res) => res.json())
       .then((data) => {
-        setZonas(data)
-      })
+        setZonas(data);
+      });
     //Cargo datos de los tipos de cancha
     fetch(`${backend_url}/tipo_cancha`)
       .then((res) => res.json())
       .then((data) => {
-        setTipoCanchas(data)
-      })
-  }, [])
+        setTipoCanchas(data);
+      });
+  }, []);
 
-  const handleZona = (option: datosZona | null) => setSelectedZona(option)
+  const handleZona = (option: datosZona | null) => setSelectedZona(option);
   const handleTipo = (option: datosTipoCancha | null) =>
-    setSelectedTipoCancha(option)
+    setSelectedTipoCancha(option);
   const handleDate = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setSelectedDate(e.target.value)
-  }
+    setSelectedDate(e.target.value);
+  };
 
   const handleSubmit = (e: React.FormEvent): void => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     if (selectedZona && selectedTipoCancha && selectedDate) {
       return navigate(
         `/canchas?zona=${selectedZona?.cod_zona}&tipo-cancha=${selectedTipoCancha?.cod_tipo}&fecha=${selectedDate}?&page=1`
-      )
+      );
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   /*const handleSubmit2 = (e: React.FormEvent): void => {
     e.preventDefault()
@@ -158,6 +158,7 @@ const FormCancha = (): JSX.Element => {
             className='w-full h-full bg-transparent'
             placeholder='Ingrese la fecha...'
             name='fecha'
+            min={new Date().toJSON().slice(0, 10)}
             onChange={handleDate}
             required
           />
@@ -166,7 +167,7 @@ const FormCancha = (): JSX.Element => {
       </div>
       <Button text='Buscar' color='bg-green-400' loading={loading} />
     </form>
-  )
-}
+  );
+};
 
-export default FormCancha
+export default FormCancha;

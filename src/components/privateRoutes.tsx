@@ -1,16 +1,17 @@
-import { Outlet, Navigate, useLocation } from 'react-router-dom'
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 
 const PrivateRoutes = (): JSX.Element => {
-  const location = useLocation()
+  const location = useLocation();
 
-  //estatico
-  const user = true
+  const { user, setUser } = useAuth();
+  //console.log("private", user);
 
   return user ? (
     <Outlet />
   ) : (
     <Navigate to='/login' state={{ from: location }} replace />
-  )
-}
+  );
+};
 
-export default PrivateRoutes
+export default PrivateRoutes;

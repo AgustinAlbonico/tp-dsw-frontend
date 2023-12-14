@@ -1,15 +1,13 @@
-import Logo from '../assets/logo_1.svg'
-import Button from './Button'
-import { AiOutlineHome } from 'react-icons/ai'
-import { BsPeople } from 'react-icons/bs'
-import { HiOutlineInboxIn } from 'react-icons/hi'
-import useAuth from '../hooks/useAuth'
-import { Link } from 'react-router-dom'
+import Logo from '../assets/logo_1.svg';
+import Button from './Button';
+import { AiOutlineHome } from 'react-icons/ai';
+import { BsPeople } from 'react-icons/bs';
+import { HiOutlineInboxIn } from 'react-icons/hi';
+import useAuth from '../hooks/useAuth';
+import { Link } from 'react-router-dom';
 
 const MobileNavbar = (): JSX.Element => {
-  const { user } = useAuth()
-
-  let a = false
+  const { user, setUser } = useAuth();
 
   return (
     <nav className='bg-white w-full h-full flex flex-col justify-between'>
@@ -46,7 +44,7 @@ const MobileNavbar = (): JSX.Element => {
           </a>
         </li>
         <div className='w-[80%] mx-auto h-[1px] bg-neutral-800 ' />
-        {!a ? (
+        {!user ? (
           <>
             <Button text='Iniciar sesion' color='bg-green-400' to='/login' />
             <Button text='Registrarse' color='bg-red-400' to='/register' />
@@ -54,9 +52,13 @@ const MobileNavbar = (): JSX.Element => {
         ) : (
           <>
             <Button text='Mi perfil' color='bg-blue-400' to='/profile' />
-            <Button text='Reservar' color='bg-purple-400' />
-            <Button text='Mis reservas' color='bg-slate-600' />
-            <Button text='Cerrar sesion' color='bg-red-400' />
+            {/* <Button text='Reservar' color='bg-purple-400' /> */}
+            <Button
+              text='Mis reservas'
+              color='bg-slate-600'
+              to='/mis-reservas'
+            />
+            <Button text='Cerrar sesion' color='bg-red-400' to='/logout' />
           </>
         )}
       </ul>
@@ -69,7 +71,7 @@ const MobileNavbar = (): JSX.Element => {
         © Copyright 2023. Todos los derechos reservados.
       </p>
     </nav>
-  )
-}
+  );
+};
 
-export default MobileNavbar
+export default MobileNavbar;

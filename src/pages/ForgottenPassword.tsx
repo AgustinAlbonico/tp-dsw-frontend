@@ -1,64 +1,62 @@
-import { useState, useEffect } from 'react'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import axios from 'axios'
-import Header from '../components/Header'
-import Button from '../components/Button'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import Button from '../components/Button';
+import { useNavigate } from 'react-router-dom';
 
 type userDataType = {
-  email: string
-}
+  email: string;
+};
 
 const Login = (): JSX.Element => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const [loginData, setLoginData] = useState<userDataType>({
     email: '',
-  })
+  });
 
   const handleLogin = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginData({
       ...loginData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    const url = 'http://localhost:3000/api/user/forgot-password'
+    e.preventDefault();
+    setLoading(true);
+    const url = 'http://localhost:3000/api/user/forgot-password';
     try {
       if (loginData.email) {
         const info = {
           ...(await axios.post(url, { ...loginData })),
-        }
+        };
         if (info) {
           setTimeout(() => {
-            navigate('/')
-          }, 2000)
+            navigate('/');
+          }, 2000);
           toast.success('Email enviado con exito!', {
             position: 'top-center',
             autoClose: 2000,
-          })
+          });
         }
       }
     } catch (error) {
       toast.error('Email no registrado!', {
         position: 'top-center',
         autoClose: 2000,
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <section>
       <div className='container h-screen w-full'>
-        <Header />
         <div className='bg-hero2 h-full bg-cover bg-no-repeat z-20 opacity-[85%] w-full flex-col flex justify-center px-8'>
           <div className='container py-4 flex flex-col flex-nowrap bg-white w-full rounded-lg shadow-lg'>
             <form
@@ -90,9 +88,8 @@ const Login = (): JSX.Element => {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </section>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
