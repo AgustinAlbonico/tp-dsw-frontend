@@ -22,13 +22,13 @@ export const router = createBrowserRouter(
     <Route path='/' element={<App />}>
       <Route index={true} path='/' element={<Home />} />
       <Route path='/login' element={<Login />} />
+      <Route path="/AdminReservasCliente" element={<AdminReservasCliente />} />
       <Route path='/register' element={<Register />} />
       <Route path='/forgot-password' element={<ForgottenPassword />} />
       <Route path='/verify/:token' element={<ValidateEmail />} />
       <Route path='' element={<PrivateRoutes />}>
         <Route path='/profile' element={<Profile />} />
         <Route path='/canchas' element={<Canchas />} />
-        <Route path="/AdminReservasCliente" element={<AdminReservasCliente />} />
         <Route path="/AdminReservasHoy" element={<AdminReservasHoy />} />
       </Route>
     </Route>
