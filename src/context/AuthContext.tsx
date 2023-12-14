@@ -35,6 +35,10 @@ export const AuthContextProvider = ({ children }: UserContextProviderType) => {
     checkLogin();
   }, []);
 
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       {children}

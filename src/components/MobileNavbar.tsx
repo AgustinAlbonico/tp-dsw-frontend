@@ -4,10 +4,25 @@ import { AiOutlineHome } from 'react-icons/ai';
 import { BsPeople } from 'react-icons/bs';
 import { HiOutlineInboxIn } from 'react-icons/hi';
 import useAuth from '../hooks/useAuth';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const MobileNavbar = (): JSX.Element => {
+  const navigate = useNavigate();
   const { user, setUser } = useAuth();
+
+  const handleLogout = async (e: React.FormEvent<Element>) => {
+    e.preventDefault();
+    const confirma = window.confirm('Desea cerrar sesion?');
+    if (confirma) {
+      await axios.get('http://localhost:3000/api/user/logout');
+      toast.success('Sesion cerrada correctamente');
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    }
+  };
 
   return (
     <nav className='bg-white w-full h-full flex flex-col justify-between'>
@@ -58,7 +73,11 @@ const MobileNavbar = (): JSX.Element => {
               color='bg-slate-600'
               to='/mis-reservas'
             />
-            <Button text='Cerrar sesion' color='bg-red-400' to='/logout' />
+            <Button
+              text='Cerrar sesion'
+              color='bg-red-400'
+              onClick={(e) => handleLogout(e)}
+            />
           </>
         )}
       </ul>

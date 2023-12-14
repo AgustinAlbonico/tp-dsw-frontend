@@ -1,6 +1,7 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Spinner from '../components/Spinner';
+import ReactPaginate from 'react-paginate';
 
 interface Reserva {
   nro_reserva: number;
@@ -29,14 +30,28 @@ const Reservas = (): JSX.Element => {
   const [reserva, setReserva] = useState<Reserva[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [cantPages, setCantPages] = useState(1);
 
   const getReserva = async () => {
     setIsLoading(true);
-    const reserva: Reserva[] = (
-      await axios.get(`http://localhost:3000/api/reserva`)
+    const { reservas, cant } = (
+      await axios.get(`http://localhost:3000/api/reserva?page=${currentPage}`)
     ).data;
-    setReserva(reserva);
+    setCantPages(cant);
+    setReserva(reservas);
     setIsLoading(false);
+  };
+
+  const handlePrev = () => {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < cantPages) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   const cancelarReserva = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -80,7 +95,7 @@ const Reservas = (): JSX.Element => {
 
   useEffect(() => {
     getReserva();
-  }, []);
+  }, [currentPage]);
 
   return (
     <section>
@@ -115,53 +130,93 @@ const Reservas = (): JSX.Element => {
                   </tr>
                 ) : (
                   reserva?.map((item) => (
-                    <>
-                      {' '}
-                      <tr className='my-auto' key={item.nro_reserva}>
-                        <td>
-                          {' '}
-                          {new Date(item.fecha_turno).toLocaleDateString(
-                            'es-ES',
-                            { timeZone: 'UTC' }
-                          )}
-                        </td>
-                        <td>
-                          {new Date(item.hora_turno).toLocaleTimeString(
-                            'es-ES',
-                            {
-                              timeZone: 'UTC',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            }
-                          )}
-                        </td>
-                        <td>{`${item.cancha.calle
-                          .charAt(0)
-                          .toLocaleUpperCase()}${item.cancha.calle.slice(1)} ${
-                          item.cancha.nro_calle
-                        }`}</td>
-                        <td>{`${item.estado
-                          .charAt(0)
-                          .toLocaleUpperCase()}${item.estado.slice(1)}`}</td>
-                        <td className='flex justify-center items-center h-full gap-2 '>
-                          <button
-                            className='px-5 py-1.5 sm:px-8 sm:py-1.5 bg-red-400 rounded-md flex justify-center text-center items-center text-white disabled:bg-red-300'
-                            onClick={(e) => cancelarReserva(e)}
-                            data-id={item.nro_reserva}
-                            disabled={
-                              item.estado === 'reservado' ? false : true
-                            }
-                          >
-                            X
-                          </button>
-                        </td>
-                      </tr>
-                    </>
+                    <tr className='my-auto' key={item.nro_reserva}>
+                      <td>
+                        {new Date(item.fecha_turno).toLocaleDateString(
+                          'es-ES',
+                          { timeZone: 'UTC' }
+                        )}
+                      </td>
+                      <td>
+                        {new Date(item.hora_turno).toLocaleTimeString('es-ES', {
+                          timeZone: 'UTC',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </td>
+                      <td>{`${item.cancha.calle
+                        .charAt(0)
+                        .toLocaleUpperCase()}${item.cancha.calle.slice(1)} ${
+                        item.cancha.nro_calle
+                      }`}</td>
+                      <td>{`${item.estado
+                        .charAt(0)
+                        .toLocaleUpperCase()}${item.estado.slice(1)}`}</td>
+                      <td className='flex justify-center items-center h-full gap-2 '>
+                        <button
+                          className='px-5 py-1.5 sm:px-8 sm:py-1.5 bg-red-400 rounded-md flex justify-center text-center items-center text-white disabled:bg-red-300'
+                          onClick={(e) => cancelarReserva(e)}
+                          data-id={item.nro_reserva}
+                          disabled={item.estado === 'reservado' ? false : true}
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
                   ))
                 )}
               </tbody>
             </table>
           </div>
+          <nav
+            className='isolate inline-flex -space-x-px rounded-md shadow-sm'
+            aria-label='Pagination'
+          >
+            <a
+              href='#'
+              className='relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+              onClick={handlePrev}
+            >
+              <svg
+                className='h-5 w-5'
+                viewBox='0 0 20 20'
+                fill='currentColor'
+                aria-hidden='true'
+              >
+                <path
+                  fill-rule='evenodd'
+                  d='M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z'
+                  clip-rule='evenodd'
+                />
+              </svg>
+            </a>
+
+            <a
+              href='#'
+              aria-current='page'
+              className='relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+            >
+              {currentPage}
+            </a>
+            <a
+              href='#'
+              className='relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+              onClick={handleNext}
+            >
+              <svg
+                className='h-5 w-5'
+                viewBox='0 0 20 20'
+                fill='currentColor'
+                aria-hidden='true'
+              >
+                <path
+                  fill-rule='evenodd'
+                  d='M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z'
+                  clip-rule='evenodd'
+                />
+              </svg>
+            </a>
+          </nav>
         </div>
       </div>
     </section>

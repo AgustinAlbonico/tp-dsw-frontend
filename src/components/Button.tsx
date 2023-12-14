@@ -35,11 +35,11 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       onClick={handleClick}
-      className={`${sizex ? 'w-' + sizex : 'w-56'} ${
+      className={`${
         sizey ? 'h-' + sizey : 'h-14'
       } ${color} rounded-md flex justify-center items-center ${
         textColor ? textColor : 'text-black'
-      } `}
+      } ${sizex ? 'px-' + sizex : 'w-56'} `}
       disabled={disabled}
     >
       {!loading ? (

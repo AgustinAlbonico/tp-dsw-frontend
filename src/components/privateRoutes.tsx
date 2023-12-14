@@ -4,8 +4,9 @@ import useAuth from '../hooks/useAuth';
 const PrivateRoutes = (): JSX.Element => {
   const location = useLocation();
 
-  const { user, setUser } = useAuth();
-  //console.log("private", user);
+  const { user } = useAuth();
+  console.log('asd');
+  console.log(user);
 
   return user ? (
     <Outlet />

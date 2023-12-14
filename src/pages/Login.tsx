@@ -1,11 +1,11 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import Button from '../components/Button';
 import { useNavigate, useLocation, Navigate, redirect } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import AuthContext from '../context/AuthContext';
+
 //Config para que el browser me guarde las cookies
 axios.defaults.withCredentials = true;
 
@@ -31,7 +31,7 @@ const Login = (): JSX.Element => {
 
   //Si el usuario ya esta logueado lo redirijo
   useEffect(() => {
-    //user && navigate('/');
+    user && navigate('/');
   }, []);
 
   const handleDataInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +53,7 @@ const Login = (): JSX.Element => {
         };
         if (info.data.user) {
           setTimeout(() => {
-            redirect('/');
+            navigate('/');
           }, 2000);
           toast.success('Inicio de sesion correcto', {
             position: 'top-center',
