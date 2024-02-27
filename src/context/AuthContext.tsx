@@ -1,49 +1,57 @@
-import axios from 'axios';
-import { createContext, useEffect, useState } from 'react';
+import axios from 'axios'
+import { createContext, useEffect, useState } from 'react'
 
 export type UserContextType = {
-  user: any;
-  setUser: any;
-};
+  user: AuthUser | null
+  setUser: (user: AuthUser | null) => void
+  isLoading: boolean
+}
 
 type UserContextProviderType = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 type AuthUser = {
-  id_usuario?: number;
-  email?: string;
-  nombre?: string;
-  apellido?: string;
-};
+  id_usuario: number
+  email: string
+  nombre: string
+  apellido: string
+  password: string
+  rol: string
+  emailtoken: string
+  verificado: boolean
+  fecha_nacimiento: Date
+}
 
-const AuthContext = createContext({} as UserContextType);
+const backend_url: string = import.meta.env.VITE_BACKEND_URL
 
-export const AuthContextProvider = ({ children }: UserContextProviderType) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
+export const AuthContext = createContext({} as UserContextType)
+
+const AuthContextProvider = ({ children }: UserContextProviderType) => {
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const checkLogin = async () => {
     try {
-      const { data } = await axios.get('http://localhost:3000/api/user/info');
-      setUser(data);
+      setIsLoading(true)
+      const { data } = await axios.get(`${backend_url}/user/info`)
+      setUser(data)
     } catch (error) {
-      setUser(null);
+      setUser(null)
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    checkLogin();
-  }, []);
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
+    checkLogin()
+  }, [])
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, isLoading}}>
       {children}
     </AuthContext.Provider>
-  );
-};
+  )
+}
 
-export default AuthContext;
+export default AuthContextProvider

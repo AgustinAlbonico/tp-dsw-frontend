@@ -1,131 +1,135 @@
-import Header from '../components/Header';
-import Button from '../components/Button';
-import { ToastContainer, toast } from 'react-toastify';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header'
+import Button from '../components/Button'
+import { ToastContainer, toast } from 'react-toastify'
+import { useState, useEffect, useContext } from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { AuthContext } from '../context/AuthContext'
 
 interface registerData {
-  nombre: string;
-  apellido: string;
-  fecha_nacimiento: string;
-  telefono: string;
-  email: string;
+  id_usuario: number | null
+  nombre: string
+  apellido: string
+  fecha_nacimiento: string
+  telefono: string
+  email: string
 }
 
 const Profile = (): JSX.Element => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [user, setUser] = useState({} as registerData);
+  const { user } = useContext(AuthContext)
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
-
-  const [rptPassword, setRptPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
 
   const [inputData, setInputData] = useState<registerData>({
+    id_usuario: null,
     nombre: '',
     apellido: '',
     fecha_nacimiento: '',
     telefono: '',
     email: '',
-  });
+  })
 
-  const getData = async () => {
-    const data: registerData = (
-      await axios.get('http://localhost:3000/api/user/info')
-    ).data;
-    setUser({
-      nombre: data.nombre,
-      apellido: data.apellido,
-      fecha_nacimiento: data.fecha_nacimiento,
-      telefono: data.telefono,
-      email: data.email,
-    });
-  };
+  // const getData = async () => {
+  //   const data: registerData = (
+  //     await axios.get('http://localhost:3000/api/user/info')
+  //   ).data;
+  //   setUser({
+  //     nombre: data.nombre,
+  //     apellido: data.apellido,
+  //     fecha_nacimiento: data.fecha_nacimiento,
+  //     telefono: data.telefono,
+  //     email: data.email,
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   getData();
+  // }, []);
 
   useEffect(() => {
-    getData();
-  }, []);
+    const fechaHora = new Date(user.fecha_nacimiento)
 
-  useEffect(() => {
-    if (Object.entries(user).length !== 0) {
-      const fechaHora = new Date(user.fecha_nacimiento);
+    const anio = fechaHora.getFullYear()
+    const mes = ('0' + (fechaHora.getMonth() + 1)).slice(-2)
+    const dia = ('0' + fechaHora.getDate()).slice(-2)
 
-      const anio = fechaHora.getFullYear();
-      const mes = ('0' + (fechaHora.getMonth() + 1)).slice(-2);
-      const dia = ('0' + fechaHora.getDate()).slice(-2);
+    const fecha = `${anio}-${mes}-${dia}`
 
-      const fecha = `${anio}-${mes}-${dia}`;
-
-      setInputData({ ...user, fecha_nacimiento: fecha });
-    }
-  }, [user]);
+    setInputData({
+      id_usuario: user.id_usuario,
+      nombre: user.nombre,
+      apellido: user.apellido,
+      telefono: user.telefono,
+      email: user.email,
+      fecha_nacimiento: fecha,
+    })
+  }, [])
 
   const handleDataInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputData({
       ...inputData,
       [e.target.name]: e.target.value,
-    });
-  };
+    })
+  }
 
   const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    console.log(inputData);
-    // const url = "http://localhost:3000/api/user/";
-    //   try {
-    //     if (
-    //       inputData.nombre &&
-    //       inputData.apellido &&
-    //       inputData.fecha_nacimiento &&
-    //       inputData.telefono
-    //     ) {
-    //       const info = {
-    //         ...(await axios.post(url, { ...inputData })).data,
-    //       };
+    e.preventDefault()
+    setLoading(true)
+    const url = 'http://localhost:3000/api/user/'
+    try {
+      if (
+        inputData.nombre &&
+        inputData.apellido &&
+        inputData.fecha_nacimiento &&
+        inputData.telefono
+      ) {
+        const info = {
+          ...(await axios.put(url, { ...inputData })).data,
+        }
 
-    //       if (info.error)
-    //         toast.error("Email o telefono ya registrados!", {
-    //           position: "top-center",
-    //           autoClose: 2000,
-    //         });
-    //       else {
-    //         setTimeout(() => {
-    //           navigate("/");
-    //         }, 3000);
-    //         toast.success("Cuenta creada con exito!", {
-    //           position: "top-center",
-    //           autoClose: 3000,
-    //         });
-    //         toast.success("Email de verificacion enviado!", {
-    //           position: "top-center",
-    //           autoClose: 3000,
-    //         });
-    //       }
-    //     }
-    //   } catch (error) {
-    //     toast.error("Error al registrar usuario", {
-    //       position: "top-center",
-    //       autoClose: 2000,
-    //     });
-    //     console.log("hola" + error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // }
-  };
+        if (info.error)
+          toast.error('Email o telefono ya registrados!', {
+            position: 'top-center',
+            autoClose: 2000,
+          })
+        else {
+          setTimeout(() => {
+            navigate('/')
+          }, 3000)
+          toast.success('Cambios realizados con exito!', {
+            position: 'top-center',
+            autoClose: 3000,
+          })
+        }
+      }
+    } catch (error) {
+      toast.error('Error al registrar usuario', {
+        position: 'top-center',
+        autoClose: 2000,
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <section>
       <div className='h-screen w-full'>
         <div className='bg-hero2 h-full bg-cover bg-no-repeat z-20 opacity-[85%] w-full flex-col flex items-center justify-center px-8'>
-          <div className='container py-4 flex flex-col flex-nowrap bg-white rounded-lg shadow-lg mt-12'>
-            <form className='flex flex-col items-center h-full my-8 font-bold'>
-              <h1 className='text-3xl text-center text-teal-500'>Mi perfil</h1>
-              <div className='w-full flex flex-col gap-y-2 items-center mt-6'>
-                <div className='flex flex-col gap-y-1 w-[80%]'>
-                  <p className=''>Nombre completo:</p>
+          <div className='w-full sm:w-[90%] md:w-[80%] lg:w-[50%] flex flex-col items-center flex-nowrap bg-white rounded-lg shadow-lg mt-12'>
+            <form
+              className='flex flex-col items-center h-full font-bold py-8 w-[85%] lg:w-[90%]'
+              onSubmit={handleUpdate}
+            >
+              <h1 className='text-3xl text-center text-teal-500 leading-6'>
+                Mi perfil
+              </h1>
+              <div className='w-full flex flex-col gap-y-4 items-center mt-4 mb-6'>
+                <div className='flex flex-col gap-y-1 w-full'>
+                  <p>Nombre completo:</p>
                   <div className='flex w-[100%] gap-4'>
                     <input
                       type='text'
@@ -147,7 +151,7 @@ const Profile = (): JSX.Element => {
                     />
                   </div>
                 </div>
-                <div className='flex flex-col gap-y-1 w-[80%]'>
+                <div className='flex flex-col gap-y-1 w-full'>
                   <p className=''>Fecha nacimiento:</p>
                   <input
                     type='date'
@@ -158,7 +162,7 @@ const Profile = (): JSX.Element => {
                     value={inputData.fecha_nacimiento}
                   />
                 </div>
-                <div className='flex flex-col gap-y-1 w-[80%]'>
+                <div className='flex flex-col gap-y-1 w-full'>
                   <p className=''>Telefono:</p>
                   <input
                     type='text'
@@ -170,7 +174,7 @@ const Profile = (): JSX.Element => {
                     value={inputData.telefono}
                   />
                 </div>
-                <div className='flex flex-col gap-y-1 w-[80%]'>
+                <div className='flex flex-col gap-y-1 w-full'>
                   <p className=''>Email:</p>
                   <input
                     type='email'
@@ -182,20 +186,19 @@ const Profile = (): JSX.Element => {
                     value={inputData.email}
                   />
                 </div>
-
-                <Button
-                  text='Actualiza'
-                  color='bg-green-400'
-                  loading={loading}
-                  onClick={handleUpdate}
-                />
               </div>
+              <Button
+                text='Actualiza'
+                color='bg-green-400'
+                loading={loading}
+                type='submit'
+              />
             </form>
           </div>
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Profile;
+export default Profile

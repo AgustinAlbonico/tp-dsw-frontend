@@ -9,6 +9,8 @@ interface userData {
   id_usuario: number;
 }
 
+const backend_url: string = import.meta.env.VITE_BACKEND_URL
+
 const ValidateEmail = (): JSX.Element => {
   const { token } = useParams();
 
@@ -23,7 +25,7 @@ const ValidateEmail = (): JSX.Element => {
   const verifyEmail = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:3000/api/user/validate-email/${token}`
+        `${backend_url}/user/validate-email/${token}`
       );
 
       setMessage(res.data.message);
@@ -36,7 +38,7 @@ const ValidateEmail = (): JSX.Element => {
   return (
     <section>
       <div className='bg-hero2 h-screen bg-cover bg-no-repeat z-20 opacity-[85%] w-full flex-col flex items-center justify-center px-8'>
-        <div className='container py-4 h-[40%] w-[40%] flex flex-col gap-12 justify-center items-center flex-nowrap bg-white w-full rounded-lg shadow-lg'>
+        <div className='container py-4 h-[40%] w-[40%] flex flex-col gap-12 justify-center items-center flex-nowrap bg-white rounded-lg shadow-lg'>
           <div className=''>
             {user ? (
               <svg
@@ -93,9 +95,9 @@ const ValidateEmail = (): JSX.Element => {
           </p>
 
           {user ? (
-            <Button color='bg-green-400' text='Iniciar sesión' to='/login' />
+            <Button color='bg-green-400' text='Iniciar sesión' to='/login' sizex='w-48'/>
           ) : (
-            <Button color='bg-green-400' text='Volver al inicio' to='/' />
+            <Button color='bg-green-400' text='Volver al inicio' to='/' sizex='w-48'/>
           )}
         </div>
       </div>

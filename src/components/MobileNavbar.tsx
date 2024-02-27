@@ -1,28 +1,36 @@
-import Logo from '../assets/logo_1.svg';
-import Button from './Button';
-import { AiOutlineHome } from 'react-icons/ai';
-import { BsPeople } from 'react-icons/bs';
-import { HiOutlineInboxIn } from 'react-icons/hi';
-import useAuth from '../hooks/useAuth';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { Link, useNavigate } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { AiOutlineHome } from 'react-icons/ai'
+import { BsPeople } from 'react-icons/bs'
+import { HiOutlineInboxIn } from 'react-icons/hi'
+import Button from './Button'
+import Logo from '../assets/logo_1.svg'
 
-const MobileNavbar = (): JSX.Element => {
-  const navigate = useNavigate();
-  const { user, setUser } = useAuth();
+interface MobileNavbarProps {
+  setMobileNav: (param: boolean) => void
+}
 
-  const handleLogout = async (e: React.FormEvent<Element>) => {
-    e.preventDefault();
-    const confirma = window.confirm('Desea cerrar sesion?');
+const backend_url: string = import.meta.env.VITE_BACKEND_URL
+
+const MobileNavbar: React.FC<MobileNavbarProps> = ({ setMobileNav }) => {
+  const navigate = useNavigate()
+
+  const { user, setUser } = useAuth()
+
+  const handleLogout = async () => {
+    setMobileNav(false)
+    const confirma = window.confirm('Desea cerrar sesion?')
     if (confirma) {
-      await axios.get('http://localhost:3000/api/user/logout');
-      toast.success('Sesion cerrada correctamente');
+      await axios.get(`${backend_url}/user/logout`)
+      toast.success('Sesion cerrada correctamente',{autoClose: 1000})
       setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+        setUser(null)
+        navigate('/')
+      }, 2000)
     }
-  };
+  }
 
   return (
     <nav className='bg-white w-full h-full flex flex-col justify-between'>
@@ -61,22 +69,67 @@ const MobileNavbar = (): JSX.Element => {
         <div className='w-[80%] mx-auto h-[1px] bg-neutral-800 ' />
         {!user ? (
           <>
-            <Button text='Iniciar sesion' color='bg-green-400' to='/login' />
-            <Button text='Registrarse' color='bg-red-400' to='/register' />
+            <Button
+              text='Iniciar sesion'
+              color='bg-green-400'
+              to='/login'
+              sizex='w-48'
+              sizey='h-12'
+              onClick={() => {
+                setMobileNav(false)
+              }}
+            />
+            <Button
+              text='Registrarse'
+              color='bg-red-400'
+              to='/register'
+              sizex='w-48'
+              sizey='h-12'
+              onClick={() => setMobileNav(false)}
+            />
           </>
-        ) : (
+        ) : user.rol === 'USUARIO' ? (
           <>
-            <Button text='Mi perfil' color='bg-blue-400' to='/profile' />
-            {/* <Button text='Reservar' color='bg-purple-400' /> */}
+            <Button
+              text='Mi perfil'
+              color='bg-blue-400'
+              to='/profile'
+              sizex='w-48'
+              sizey='h-12'
+              onClick={() => setMobileNav(false)}
+            />
             <Button
               text='Mis reservas'
               color='bg-slate-600'
               to='/mis-reservas'
+              sizex='w-48'
+              sizey='h-12'
+              onClick={() => setMobileNav(false)}
             />
             <Button
               text='Cerrar sesion'
               color='bg-red-400'
-              onClick={(e) => handleLogout(e)}
+              sizex='w-48'
+              sizey='h-12'
+              onClick={handleLogout}
+            />
+          </>
+        ) : (
+          <>
+            <Button
+              text='Panel ADMIN'
+              color='bg-blue-400'
+              to='/admin'
+              sizex='w-48'
+              sizey='h-12'
+              onClick={() => setMobileNav(false)}
+            />
+            <Button
+              text='Cerrar sesion'
+              color='bg-red-400'
+              sizex='w-48'
+              sizey='h-12'
+              onClick={handleLogout}
             />
           </>
         )}
@@ -90,7 +143,7 @@ const MobileNavbar = (): JSX.Element => {
         © Copyright 2023. Todos los derechos reservados.
       </p>
     </nav>
-  );
-};
+  )
+}
 
-export default MobileNavbar;
+export default MobileNavbar

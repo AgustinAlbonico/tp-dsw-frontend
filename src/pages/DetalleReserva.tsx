@@ -17,7 +17,6 @@ const Detalles = (): JSX.Element => {
 
   const getReserva = async () => {
     setReserva((await axios.get(`http://localhost:3000/api/reserva`)).data);
-    console.log((await axios.get(`http://localhost:3000/api/reserva`)).data);
   };
 
   useEffect(() => {

@@ -3,7 +3,7 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     fontFamily: {
-      primary: 'Saira',
+      primary: 'Montserrat',
     },
     extend: {},
     screens: {

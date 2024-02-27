@@ -1,8 +1,8 @@
-import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import clsx from 'clsx';
 
 type inputCancha = {
   zona: number | null;
@@ -23,40 +23,26 @@ interface datosCancha {
   horarios: string[];
 }
 
-interface datosZona {
-  cod_zona: number;
-  descripcion: string;
-}
-
-interface datosTipo {
-  cod_tipo: number;
-  descripcion: string;
-}
-
 interface datosReserva {
   fecha_turno: string | null;
   hora_turno: string | null;
   nro_cancha: number | null;
 }
 
+const backend_url: string = import.meta.env.VITE_BACKEND_URL
+
 const Canchas = (): JSX.Element => {
   const navigate = useNavigate();
   //Extraigo los parametros de zona y tipo
   const [params] = useSearchParams();
+
   const cod_zona = params.get('zona');
   const cod_tipo = params.get('tipo-cancha');
   const fecha_param = params.get('fecha');
+  
+  //Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [cantPages, setCantPages] = useState(1);
-
-  const [loading, setLoading] = useState(false);
-  //const [page, setPage] = useState(1)
-
-  const [datosReserva, setDatosReserva] = useState<datosReserva>({
-    fecha_turno: fecha_param,
-    nro_cancha: null,
-    hora_turno: null,
-  });
 
   const handlePrev = () => {
     if (currentPage !== 1) {
@@ -69,6 +55,14 @@ const Canchas = (): JSX.Element => {
       setCurrentPage(currentPage + 1);
     }
   };
+
+  const [loading, setLoading] = useState(false);
+
+  const [datosReserva, setDatosReserva] = useState<datosReserva>({
+    fecha_turno: fecha_param,
+    nro_cancha: null,
+    hora_turno: null,
+  });
 
   useEffect(() => {
     if (
@@ -87,6 +81,7 @@ const Canchas = (): JSX.Element => {
           });
         })
         .catch((error) => {
+          console.log()
           if (error.response.data.excede) {
             setTimeout(() => {
               navigate('/');
@@ -96,17 +91,13 @@ const Canchas = (): JSX.Element => {
               autoClose: 2000,
             });
           }
-          toast.error('Error al realizar la reserva!', {
+          toast.error(error.response.data.message, {
             position: 'top-center',
             autoClose: 2000,
           });
         });
     }
   }, [datosReserva]);
-
-  //Creo un estado para traer la zona y tipo completos
-  ////const [zona, setZona] = useState<datosZona | null>(null);
-  ////const [tipo, setTipo] = useState<datosTipo | null>(null);
 
   //Estado con los datos actuales de la cancha
   const [cancha, setCancha] = useState<inputCancha>({
@@ -117,30 +108,17 @@ const Canchas = (): JSX.Element => {
 
   //Estado para guardar todas las canchas disponibles
   const [canchas, setCanchas] = useState<datosCancha[]>([]);
-  ////const [selectedOption, setSelectedOption] = useState(null);
 
   const getCanchas = async () => {
+    console.log('asdasd')
     const { canchas, cant } = (
       await axios.get(
-        `http://localhost:3000/api/cancha?zona=${cancha?.zona}&tipoCancha=${cancha?.tipoCancha}&fecha=${cancha?.fecha}&page=${currentPage}`
+        `${backend_url}/cancha/disponibles?zona=${cancha?.zona}&tipoCancha=${cancha?.tipoCancha}&fecha=${cancha?.fecha}&page=${currentPage}`
       )
     ).data;
     setCantPages(cant);
     setCanchas(canchas);
   };
-
-  // const getZona = async () => {
-  //   setZona(
-  //     (await axios.get(`http://localhost:3000/api/zona/${cod_zona}`)).data
-  //   );
-  // };
-
-  // const getTipo = async () => {
-  //   setTipo(
-  //     (await axios.get(`http://localhost:3000/api/tipo_cancha/${cod_tipo}`))
-  //       .data
-  //   );
-  // };
 
   const handleReserva = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -166,12 +144,10 @@ const Canchas = (): JSX.Element => {
   };
 
   const fetchData = async () => {
-    return await axios.post('http://localhost:3000/api/reserva/', datosReserva);
+    return await axios.post(`${backend_url}/reserva/`, datosReserva);
   };
 
   useEffect(() => {
-    // getZona();
-    // getTipo();
     getCanchas();
   }, [currentPage]);
 
@@ -179,16 +155,16 @@ const Canchas = (): JSX.Element => {
     <section>
       <div className='h-screen w-full'>
         <div className='bg-hero2 h-full bg-cover z-20 opacity-[85%] w-full flex-col flex justify-center items-center px-0'>
-          <div className='w-[60%] flex flex-col justify-center items-center bg-white py-8 px-4 rounded-md'>
-            <div className='w-full flex-col gap-y-8 md:grid md:grid-cols-3 justify-center '>
-              {canchas.map((item) => (
-                <div className='mb-4 flex flex-col items-center w-full'>
+          <div className='w-[80%] px-10 lg:w-[60%] flex flex-col justify-center items-center bg-white py-2 lg:py-8 rounded-md mt-12 xl:mt-0'>
+            <div className='w-full flex-col gap-y-8 xl:grid xl:grid-cols-3 justify-center'>
+              {canchas.length === 0 ? <h2 className='py-4 font-bold text-xl text-center'>No hay canchas disponibles para ese tipo de deporte y esa zona</h2> :
+              canchas.map((item) => (
+                <div className='flex flex-col items-center w-full' key={item.nro_cancha}>
                   <form
-                    className='mx-auto'
-                    key={item.nro_cancha}
+                    className='w-full xl:w-fit xl:mx-auto'
                     onSubmit={handleReserva}
                   >
-                    <div className='flex flex-col items-center'>
+                    <div className='flex flex-col items-center mb-4 '>
                       <div className='flex flex-col w-full items-center text-center'>
                         <div className='font-bold'>
                           <p>Cancha: {item.descripcion}</p>
@@ -200,8 +176,9 @@ const Canchas = (): JSX.Element => {
                             required
                             name='hora_turno'
                             className='border p-2 my-2 w-full'
+                            disabled={!item.horarios.length}
                           >
-                            <option value=''>Selecciona un horario</option>
+                            {item.horarios.length > 0 ? <option value=''>Selecciona un horario</option> : <option value=''>No hay horarios disp.</option>}
                             {item.horarios.map((horario, index) => (
                               <option key={index} value={horario}>
                                 {horario}
@@ -214,8 +191,8 @@ const Canchas = (): JSX.Element => {
                       <button
                         type='submit'
                         data-id={item.nro_cancha}
-                        className={`w-48 h-12 text-black bg-green-400 rounded-md flex justify-center items-center`}
-                        disabled={loading ? true : false}
+                        className={clsx('w-full xl:w-48 h-12 text-black rounded-md flex justify-center items-center', !item.horarios.length ? 'bg-red-400 ' : 'bg-green-400')}
+                        disabled={loading || !item.horarios.length ? true : false}
                       >
                         {!loading ? (
                           <p className='text-lg font-bold text-white'>
@@ -243,14 +220,14 @@ const Canchas = (): JSX.Element => {
                           </div>
                         )}
                       </button>
-                      <div className='border-b-8' />
+                      <div className='h-[1px] w-full bg-black my-2 lg:my-4 xl:hidden' />
                     </div>
                   </form>
                 </div>
               ))}
             </div>
-            <nav
-              className='isolate inline-flex -space-x-px rounded-md shadow-sm'
+            {canchas.length > 0 && <nav
+              className='isolate inline-flex -space-x-px rounded-md shadow-sm mt-2'
               aria-label='Pagination'
             >
               <a
@@ -265,9 +242,9 @@ const Canchas = (): JSX.Element => {
                   aria-hidden='true'
                 >
                   <path
-                    fill-rule='evenodd'
+                    fillRule='evenodd'
                     d='M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z'
-                    clip-rule='evenodd'
+                    clipRule='evenodd'
                   />
                 </svg>
               </a>
@@ -291,13 +268,13 @@ const Canchas = (): JSX.Element => {
                   aria-hidden='true'
                 >
                   <path
-                    fill-rule='evenodd'
+                    fillRule='evenodd'
                     d='M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z'
-                    clip-rule='evenodd'
+                    clipRule='evenodd'
                   />
                 </svg>
               </a>
-            </nav>
+            </nav>}
           </div>
         </div>
       </div>

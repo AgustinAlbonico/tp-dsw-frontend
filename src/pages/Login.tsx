@@ -1,76 +1,78 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
-import Button from '../components/Button';
-import { useNavigate, useLocation, Navigate, redirect } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import { useState, useEffect, useContext } from 'react'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import axios from 'axios'
+import Button from '../components/Button'
+import { useNavigate, useLocation, Navigate, redirect } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
+import { AuthContext } from '../context/AuthContext'
+
+const backend_url: string = import.meta.env.VITE_BACKEND_URL
 
 //Config para que el browser me guarde las cookies
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true
 
 type userDataType = {
-  email: string;
-  password: string;
-};
+  email: string
+  password: string
+}
 
 const Login = (): JSX.Element => {
-  const navigate = useNavigate();
-  //const location = useLocation();
+  const navigate = useNavigate()
 
-  const { user, setUser } = useAuth();
-  //const { user, setUser } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext)
 
-  const [loading, setLoading] = useState(false);
-  const [disabled, setDisabled] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [disabled, setDisabled] = useState(false)
 
   const [loginData, setLoginData] = useState<userDataType>({
     email: '',
     password: '',
-  });
+  })
 
   //Si el usuario ya esta logueado lo redirijo
   useEffect(() => {
-    user && navigate('/');
-  }, []);
+    user && navigate('/')
+  }, [user, navigate])
 
   const handleDataInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginData({
       ...loginData,
       [e.target.name]: e.target.value,
-    });
-  };
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setDisabled(true);
-    const url = 'http://localhost:3000/api/user/login';
+    e.preventDefault()
+    setLoading(true)
+    setDisabled(true)
+    const url = `${backend_url}/user/login`
     try {
       if (loginData.email && loginData.password) {
         const info = {
           ...(await axios.post(url, { ...loginData })),
-        };
+        }
         if (info.data.user) {
           setTimeout(() => {
-            navigate('/');
-          }, 2000);
+            setUser(info.data.user)
+            navigate('/')
+          }, 1500)
           toast.success('Inicio de sesion correcto', {
             position: 'top-center',
-            autoClose: 2000,
-          });
+            autoClose: 1000,
+          })
         }
       }
     } catch (error) {
       toast.error('Usuario o contraseña incorrectos!', {
         position: 'top-center',
-        autoClose: 2000,
-      });
-      setDisabled(false);
+        autoClose: 1000,
+      })
+      setDisabled(false)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <section>
@@ -114,9 +116,10 @@ const Login = (): JSX.Element => {
                 <Button
                   text='Ingresar'
                   color='bg-green-400'
-                  onClick={handleSubmit}
+                  sizex='w-48'
                   loading={loading}
                   disabled={disabled}
+                  type='submit'
                 />
               </div>
             </form>
@@ -124,7 +127,7 @@ const Login = (): JSX.Element => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

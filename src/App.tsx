@@ -1,18 +1,17 @@
-import { useContext, useState } from 'react'
 import Header from './components/Header'
 import { Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
-import { AuthContextProvider } from './context/AuthContext.tsx'
+import AuthContextProvider from './context/AuthContext'
+import WhatsappButton from './components/WhatsappButton/WhatsappButton'
 
 function App() {
   return (
-    <>
-      <AuthContextProvider>
-        <Header />
-        <Outlet />
-        <ToastContainer />
-      </AuthContextProvider>
-    </>
+    <AuthContextProvider>
+      <Header />
+      <Outlet />
+      <WhatsappButton/>
+      <ToastContainer />
+    </AuthContextProvider>
   )
 }
 
