@@ -1,0 +1,70 @@
+const { Given, When, Then } = require('cucumber');
+const { Builder, By, Key, until } = require('selenium-webdriver');
+const { expect } = require('chai');
+
+const INDEX_URL = "http://localhost:5173/";
+const LOGIN_URL = "http://localhost:5173/login";
+
+Given('Que estoy en la página de PitchBookings', async function () {
+  await this.driver.get(LOGIN_URL);
+});
+
+When('Hago click en el "{opcion}"', async function (opcion) {
+  const dropdown = await esperarElemento(this.driver, By.XPATH, "//path"); // Menu Hamburguesa
+  await dropdown.click();
+});
+
+When('Hago clic en el boton Iniciar Sesión', async function () {
+  const boton = await esperarElemento(this.driver, By.XPATH, "//button[contains(text(), 'Iniciar Sesión')]");
+  await boton.click();
+});
+
+Then('Soy redirigido a la proxima pagina', async function () {
+  const currentUrl = await this.driver.getCurrentUrl();
+  expect(currentUrl).to.equal(LOGIN_URL);
+});
+
+Then('Deberia ver el label "{texto_label}"', async function (texto_label) {
+  await esperarElemento(this.driver, By.XPATH, `//*[contains(text(), '${texto_label}')]`); // LOGIN
+  const label = await this.driver.findElement(By.XPATH, `//*[contains(text(), '${texto_label}')]`);
+  const isDisplayed = await label.isDisplayed();
+  expect(isDisplayed).to.be.true;
+});
+
+async function esperarElemento(driver, locator, xpath) {
+  const elemento = await driver.wait(until.elementLocated(locator(xpath)), 5000);
+  return await driver.wait(until.elementIsVisible(elemento), 5000);
+}
+
+
+
+
+
+INDEX_URL = "http://localhost:5173/"
+LOGIN_URL = "http://localhost:5173/login"
+
+# features/steps/login.steps
+@given('Que estoy en la página de PitchBookings')
+def step_given(context):
+   assert LOGIN_URL in context.driver.current_url
+
+@when('Hago click en el "{opcion}"')
+def step_when(context, opcion):
+    dropdown = esperar_elemento(context, , "path") //Menu Hamburguesa
+    boton.click()
+
+@when('Hago clic en el boton Iniciar Sesión')
+def step_impl(context) :
+    boton = esperar_elemento(context, By.XPATH, "//button[contains(text(), 'Iniciar Sesión')]")
+    boton.click()
+
+@then('Soy redirigido a la proxima pagina')
+def step_then(context):
+    assert LOGIN_URL in context.driver.current_url
+
+@then('Deberia ver el label "{texto_label}"')
+def step_then(context, texto_label) :
+    esperar_elemento(context, By.XPATH, f"//*[contains(text(), '{texto_label}')]") //LOGIN
+    label = context.driver.find_element(By.XPATH, f"//*[contains(text(), '{texto_label}')]")
+    assert label.is_displayed()
+    
