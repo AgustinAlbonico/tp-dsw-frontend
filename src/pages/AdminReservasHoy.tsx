@@ -101,6 +101,10 @@ const AdminReservasHoy: React.FC = () => {
                               <span className='text-lg underline'>Estado:</span>{' '}
                               {reserva.estado}
                             </p>
+                            <p className='px-1'>
+                              <span className='text-lg underline'>Usuario:</span>{' '}
+                              {reserva.id_usuario}
+                            </p>
                           </div>
                           {/* Otros detalles de la reserva */}
                         </div>
